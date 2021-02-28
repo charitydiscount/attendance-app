@@ -4,12 +4,32 @@ import './index.css';
 import App from './app/App';
 import reportWebVitals from './reportWebVitals';
 import './app/i18n';
+import { createBrowserHistory } from "history";
+import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
+import { Provider } from 'react-redux';
+import { applyMiddleware, createStore } from 'redux';
+import thunk from 'redux-thunk';
+import createRootReducer from "./redux/RootReducer"
+
+export const publicUrl = process.env.PUBLIC_URL || '';
+export const history = createBrowserHistory({basename: publicUrl});
+
+// redux store
+export const store = createStore(
+    createRootReducer(history),
+    {}, // initial state
+    applyMiddleware(thunk, routerMiddleware(history))
+);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <React.StrictMode>
+        <Provider store={store}>
+            <ConnectedRouter history={history}>
+                <App/>
+            </ConnectedRouter>
+        </Provider>
+    </React.StrictMode>,
+    document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function
